@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   extends: [
-    "@turbo/eslint-config",
+    "next/core-web-vitals",
     "prettier"
   ],
   parser: "@typescript-eslint/parser",
