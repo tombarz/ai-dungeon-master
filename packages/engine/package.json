@@ -1,0 +1,30 @@
+{
+  "name": "@ai-dungeon-master/engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dice rolling, rules engine, and encounter controller - pure functions",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@ai-dungeon-master/models": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6",
+    "@types/node": "^20.8.7"
+  }
+}

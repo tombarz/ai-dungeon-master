@@ -1,0 +1,39 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Next.js 14+ web app for AI Dungeon Master",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "lint": "next lint",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:e2e": "playwright test",
+    "clean": "rm -rf .next dist"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@ai-dungeon-master/models": "workspace:*",
+    "@ai-dungeon-master/engine": "workspace:*",
+    "@ai-dungeon-master/orchestrator": "workspace:*",
+    "@ai-dungeon-master/storage": "workspace:*",
+    "@ai-dungeon-master/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "@types/node": "^20.8.7",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "eslint": "^8.51.0",
+    "eslint-config-next": "^14.0.0",
+    "vitest": "^0.34.6",
+    "@playwright/test": "^1.40.0",
+    "tailwindcss": "^3.3.5",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31"
+  }
+}

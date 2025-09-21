@@ -1,0 +1,55 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@ai-dungeon-master/models": ["./packages/models/src"],
+      "@ai-dungeon-master/engine": ["./packages/engine/src"],
+      "@ai-dungeon-master/orchestrator": ["./packages/orchestrator/src"],
+      "@ai-dungeon-master/storage": ["./packages/storage/src"],
+      "@ai-dungeon-master/ui": ["./packages/ui/src"]
+    }
+  },
+  "include": [],
+  "exclude": ["node_modules", "dist", "build", ".next"],
+  "references": [
+    {
+      "path": "./packages/models"
+    },
+    {
+      "path": "./packages/engine"
+    },
+    {
+      "path": "./packages/orchestrator"
+    },
+    {
+      "path": "./packages/storage"
+    },
+    {
+      "path": "./packages/ui"
+    },
+    {
+      "path": "./apps/web"
+    },
+    {
+      "path": "./apps/mobile"
+    }
+  ]
+}
