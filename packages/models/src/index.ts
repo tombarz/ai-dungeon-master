@@ -1,14 +1,57 @@
-// Core D&D mechanics
-export * from "./core";
+/**
+ * AI Dungeon Master Models - Minimal MVP Package
+ *
+ * Clean, type-safe domain models with Zod validation for the AI Dungeon Master MVP.
+ */
 
-// Domain-specific exports
-export * from "./character";
-export * from "./combat";
-export * from "./creatures";
-export * from "./campaign";
-export * from "./logging";
-export * from "./session";
-export * from "./versioning";
+// Export all types
+export type {
+  ID,
+  Ability,
+  Speaker,
+  Language,
+  Rating,
+  DamageType,
+  Condition,
+  CreatureKind,
+  StatBlock,
+  Creature,
+  PartyState,
+  EffectInstance,
+  EncounterState,
+  RollLog,
+  TurnLog,
+  CanonKind,
+  CanonFact,
+  Campaign,
+  Session
+} from "./types";
 
-// Schema validation and parsers
-export * from "./schemas";
+// Export all schemas
+export {
+  zID,
+  zAbility,
+  zSpeaker,
+  zLanguage,
+  zRating,
+  zDamageType,
+  zCondition,
+  zStatBlock,
+  zCreatureKind,
+  zCreature,
+  zPartyState,
+  zEffectInstance,
+  zEncounterState,
+  zRollLog,
+  zTurnLog,
+  zCanonKind,
+  zCanonFact,
+  zCampaign,
+  zSession
+} from "./schemas";
+
+// Export parser functions
+export {
+  parseSession,
+  parseCampaign
+} from "./schemas";
