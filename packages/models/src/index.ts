@@ -1,57 +1,12 @@
 /**
- * AI Dungeon Master Models - Minimal MVP Package
+ * AI Dungeon Master Models - Minimal MVP Package (Organized)
  *
  * Clean, type-safe domain models with Zod validation for the AI Dungeon Master MVP.
+ * Organized into logical domains for better maintainability while keeping the same API.
  */
 
-// Export all types
-export type {
-  ID,
-  Ability,
-  Speaker,
-  Language,
-  Rating,
-  DamageType,
-  Condition,
-  CreatureKind,
-  StatBlock,
-  Creature,
-  PartyState,
-  EffectInstance,
-  EncounterState,
-  RollLog,
-  TurnLog,
-  CanonKind,
-  CanonFact,
-  Campaign,
-  Session
-} from "./types";
+// Export all types from organized domains
+export * from "./types";
 
-// Export all schemas
-export {
-  zID,
-  zAbility,
-  zSpeaker,
-  zLanguage,
-  zRating,
-  zDamageType,
-  zCondition,
-  zStatBlock,
-  zCreatureKind,
-  zCreature,
-  zPartyState,
-  zEffectInstance,
-  zEncounterState,
-  zRollLog,
-  zTurnLog,
-  zCanonKind,
-  zCanonFact,
-  zCampaign,
-  zSession
-} from "./schemas";
-
-// Export parser functions
-export {
-  parseSession,
-  parseCampaign
-} from "./schemas";
+// Export all schemas and parsers from organized domains
+export * from "./schemas";
