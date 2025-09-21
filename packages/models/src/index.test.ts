@@ -1,42 +1,59 @@
 import { describe, it, expect } from "vitest";
-import { Character, CharacterClass, ItemType, ItemRarity } from "./index";
+import { parseAbility, parseCharacter } from "./index";
 
-describe("Models", () => {
-  it("should create a valid character", () => {
-    const characterClass: CharacterClass = {
-      id: "fighter",
-      name: "Fighter",
-      description: "A warrior",
-      hitDie: 10,
-      primaryAbility: "strength",
+describe("Legacy Models Compatibility", () => {
+  it("should parse basic ability scores", () => {
+    const ability = {
+      strength: 15,
+      dexterity: 14,
+      constitution: 13,
+      intelligence: 12,
+      wisdom: 10,
+      charisma: 8,
     };
 
-    const character: Character = {
-      id: "test-character",
-      name: "Test Hero",
-      level: 1,
-      class: characterClass,
-      stats: {
-        strength: 15,
-        dexterity: 14,
-        constitution: 13,
-        intelligence: 12,
-        wisdom: 10,
-        charisma: 8,
-      },
-      inventory: [],
-    };
-
-    expect(character.name).toBe("Test Hero");
-    expect(character.level).toBe(1);
-    expect(character.class.name).toBe("Fighter");
-    expect(character.stats.strength).toBe(15);
+    expect(() => parseAbility(ability)).not.toThrow();
+    const parsed = parseAbility(ability);
+    expect(parsed.strength).toBe(15);
   });
 
-  it("should have valid enum values", () => {
-    expect(ItemType.WEAPON).toBe("weapon");
-    expect(ItemType.ARMOR).toBe("armor");
-    expect(ItemRarity.COMMON).toBe("common");
-    expect(ItemRarity.LEGENDARY).toBe("legendary");
+  it("should parse a minimal character", () => {
+    const character = {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      name: "Test Hero",
+      level: 1,
+      class: {
+        name: "Fighter",
+        hitDie: 10,
+        primaryAbility: "strength" as const,
+        savingThrowProficiencies: [],
+        armorProficiencies: [],
+        weaponProficiencies: [],
+        toolProficiencies: [],
+        skillProficiencies: [],
+        features: [],
+      },
+      race: "Human",
+      background: "Soldier",
+      alignment: "Lawful Good",
+      stats: {
+        armorClass: 16,
+        hitPoints: 12,
+        speed: 30,
+        abilities: {
+          strength: 16,
+          dexterity: 13,
+          constitution: 15,
+          intelligence: 12,
+          wisdom: 14,
+          charisma: 10,
+        },
+      },
+    };
+
+    expect(() => parseCharacter(character)).not.toThrow();
+    const parsed = parseCharacter(character);
+    expect(parsed.name).toBe("Test Hero");
+    expect(parsed.level).toBe(1);
   });
 });
