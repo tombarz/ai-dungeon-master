@@ -35,6 +35,14 @@ export interface Creature extends StatBlock {
   kind: CreatureKind;
   /** Display name */
   name: string;
+  /** Character race (e.g., "Human", "Elf", "Dwarf") */
+  race?: string;
+  /** Character class (e.g., "Fighter", "Wizard", "Rogue") */
+  class?: string;
+  /** Character level (1-20 for D&D) */
+  level?: number;
+  /** Known skills and proficiencies */
+  skills?: string[];
   /** Items carried by this creature */
   inventory?: { name: string; qty?: number }[];
   /** Active status conditions */

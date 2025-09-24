@@ -70,6 +70,7 @@ describe("AI Dungeon Master Models - Minimal MVP", () => {
                   "maxHP": 10,
                   "name": "Test Character",
                   "resist": [],
+                  "skills": [],
                   "vuln": [],
                 },
               ],
