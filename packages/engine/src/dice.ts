@@ -19,6 +19,7 @@ interface ParsedDiceExpression {
  */
 export class ProvablyFairDiceService {
   private static readonly DICE_EXPR_REGEX = /^\s*(\d+)d(\d+)\s*([+-]\s*\d+)?\s*$/i;
+  private static readonly UINT32_RANGE = 0x100000000; // 2^32
   
   /**
    * Roll dice based on expression with optional seed
@@ -228,22 +229,48 @@ export class ProvablyFairDiceService {
     const results: number[] = [];
     
     for (let i = 0; i < count; i++) {
-      // Create deterministic "random" value for each die
-      const dieHash = createHash('sha256')
-        .update(seed + i.toString())
-        .digest();
-      
-      // Convert first 4 bytes to a 32-bit unsigned integer
-      const randomValue = dieHash.readUInt32BE(0);
-      
-      // Map to dice range (1 to sides)
-      const dieResult = (randomValue % sides) + 1;
-      results.push(dieResult);
+      results.push(this.rollFairDie(sides, seed, i));
     }
     
     return results;
   }
-}
 
+  /**
+   * Generate a single fair die result using rejection sampling to avoid modulo bias
+   */
+  private rollFairDie(sides: number, seed: string, dieIndex: number): number {
+    const range = ProvablyFairDiceService.UINT32_RANGE;
+    const limit = range - (range % sides);
+    let attempt = 0;
+
+    while (true) {
+      const randomValue = this.generateUInt32(seed, dieIndex, attempt);
+
+      if (randomValue < limit) {
+        return (randomValue % sides) + 1;
+      }
+
+      attempt += 1;
+
+      // The chance of repeated rejections is extremely small, but we guard against
+      // potential infinite loops to preserve reliability in deterministic contexts.
+      if (attempt > 1000) {
+        throw new Error('Failed to generate a fair dice roll after multiple attempts');
+      }
+    }
+  }
+
+  /**
+   * Deterministically derive a 32-bit unsigned integer from the seed, die index, and attempt
+   */
+  private generateUInt32(seed: string, dieIndex: number, attempt: number): number {
+    const hash = createHash('sha256')
+      .update(`${seed}:${dieIndex}:${attempt}`)
+      .digest();
+
+    return hash.readUInt32BE(0);
+  }
+
+}
 // Export singleton instance
 export const diceService = new ProvablyFairDiceService();
