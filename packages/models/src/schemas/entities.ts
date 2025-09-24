@@ -31,6 +31,10 @@ export const zCreature = zStatBlock.and(z.object({
   id: z.string().uuid("ID must be a valid UUID").describe("Unique identifier"),
   kind: zCreatureKind.describe("What type of creature this is"),
   name: z.string().min(1).describe("Display name"),
+  race: z.string().min(1).optional().describe("Character race (e.g., Human, Elf, Dwarf)"),
+  class: z.string().min(1).optional().describe("Character class (e.g., Fighter, Wizard, Rogue)"),
+  level: z.number().int().min(1).max(20).optional().describe("Character level (1-20 for D&D)"),
+  skills: z.array(z.string().min(1)).default([]).describe("Known skills and proficiencies"),
   inventory: z.array(z.object({
     name: z.string(),
     qty: z.number().int().min(1).optional()
