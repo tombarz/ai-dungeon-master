@@ -7,5 +7,6 @@
 
 // Re-export all types from organized domains
 export * from "./types/core";
+export * from "./types/dice";
 export * from "./types/entities";
 export * from "./types/game-state";

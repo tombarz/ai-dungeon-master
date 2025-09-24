@@ -1,15 +1,7 @@
 import { createHash, randomBytes } from 'crypto';
+import type { DiceRollResult, DiceVerificationResult } from '@ai-dungeon-master/models';
 
-export interface DiceRollResult {
-  result: number;
-  breakdown: number[];
-  seed: string;
-}
-
-export interface DiceVerificationResult {
-  valid: boolean;
-  error?: string;
-}
+export type { DiceRollResult, DiceVerificationResult } from '@ai-dungeon-master/models';
 
 /**
  * Represents a parsed dice expression

@@ -7,5 +7,6 @@
 
 // Re-export all schemas from organized domains
 export * from "./schemas/core";
+export * from "./schemas/dice";
 export * from "./schemas/entities";
 export * from "./schemas/game-state";
