@@ -14,9 +14,9 @@ export const zStatBlock = z.object({
     .refine((obj) => Object.keys(obj).length === 6, "Must include all six abilities")
     .describe("Raw ability scores for all six abilities"),
   profBonus: z.number().int().optional().describe("Proficiency bonus for skilled creatures"),
-  resist: z.array(zDamageType).default([]).describe("Damage types this creature resists"),
-  vuln: z.array(zDamageType).default([]).describe("Damage types this creature is vulnerable to"),
-  immune: z.array(zDamageType).default([]).describe("Damage types this creature is immune to"),
+  resist: z.array(zDamageType).default(() => []).describe("Damage types this creature resists"),
+  vuln: z.array(zDamageType).default(() => []).describe("Damage types this creature is vulnerable to"),
+  immune: z.array(zDamageType).default(() => []).describe("Damage types this creature is immune to"),
 }).refine((data) => data.hp <= data.maxHP, "Current HP cannot exceed maximum HP")
   .describe("Complete stat block for any creature");
 
