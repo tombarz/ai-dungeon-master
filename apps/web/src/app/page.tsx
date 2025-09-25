@@ -2,24 +2,17 @@
 
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
-import { Message, createInitialMessages, formatTimestamp, pickAutoReply } from '../lib/chat'
+import { Message, createMessage } from '../lib/chat'
 
 export default function Home() {
-  const [messages, setMessages] = useState<Message[]>(createInitialMessages)
+  const [messages, setMessages] = useState<Message[]>([])
   const [draft, setDraft] = useState('')
   const viewportRef = useRef<HTMLDivElement>(null)
-  const pendingReplyRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (!viewportRef.current) return
     viewportRef.current.scrollTo({ top: viewportRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages])
-
-  useEffect(() => {
-    return () => {
-      if (pendingReplyRef.current) clearTimeout(pendingReplyRef.current)
-    }
-  }, [])
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -27,27 +20,10 @@ export default function Home() {
 
     if (!trimmed) return
 
-    const timestamp = formatTimestamp()
-    const userMessage: Message = {
-      id: Date.now(),
-      author: 'user',
-      content: trimmed,
-      timestamp,
-    }
+    const userMessage = createMessage('user', trimmed)
 
     setMessages((current) => [...current, userMessage])
     setDraft('')
-
-    pendingReplyRef.current = setTimeout(() => {
-      const reply: Message = {
-        id: Date.now() + 1,
-        author: 'assistant',
-        content: pickAutoReply(trimmed),
-        timestamp: formatTimestamp(),
-      }
-
-      setMessages((current) => [...current, reply])
-    }, 650)
   }
 
   const disableSend = draft.trim().length === 0
@@ -126,4 +102,3 @@ function ChatBubble({ message }: { message: Message }) {
     </div>
   )
 }
-
