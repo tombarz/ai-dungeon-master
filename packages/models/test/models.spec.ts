@@ -7,7 +7,9 @@ import {
   zPartyState,
   zEncounterState,
   zStatBlock,
-  zCanonFact
+  zCanonFact,
+  zDiceRollResult,
+  zDiceVerificationResult
 } from "../src";
 
 describe("AI Dungeon Master Models - Minimal MVP", () => {
@@ -365,4 +367,28 @@ describe("AI Dungeon Master Models - Minimal MVP", () => {
       expect(() => zCanonFact.parse(validCanon)).not.toThrow();
     });
   });
+
+  describe("Dice schemas", () => {
+    it("accepts valid roll results", () => {
+      const roll = {
+        result: 12,
+        breakdown: [6, 6],
+        seed: "seed-123"
+      };
+
+      const parsed = zDiceRollResult.parse(roll);
+      expect(parsed).toEqual(roll);
+    });
+
+    it("requires an explanation when verification fails", () => {
+      const verified = { valid: true };
+      expect(zDiceVerificationResult.parse(verified)).toEqual(verified);
+
+      expect(() => zDiceVerificationResult.parse({ valid: false })).toThrow();
+
+      const failed = { valid: false, error: "checksum mismatch" };
+      expect(zDiceVerificationResult.parse(failed)).toEqual(failed);
+    });
+  });
+
 });

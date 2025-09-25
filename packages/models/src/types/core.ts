@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Core enums and primitives for the AI Dungeon Master MVP
  */
 
