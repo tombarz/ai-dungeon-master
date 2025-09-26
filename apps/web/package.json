@@ -14,26 +14,30 @@
     "clean": "rm -rf .next dist"
   },
   "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@ai-dungeon-master/models": "workspace:*",
     "@ai-dungeon-master/engine": "workspace:*",
+    "@ai-dungeon-master/models": "workspace:*",
     "@ai-dungeon-master/orchestrator": "workspace:*",
     "@ai-dungeon-master/storage": "workspace:*",
-    "@ai-dungeon-master/ui": "workspace:*"
+    "@ai-dungeon-master/ui": "workspace:*",
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "typescript": "^5.2.2",
+    "@playwright/test": "^1.40.0",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20.8.7",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
+    "autoprefixer": "^10.4.16",
     "eslint": "^8.51.0",
     "eslint-config-next": "^14.0.0",
-    "vitest": "^0.34.6",
-    "@playwright/test": "^1.40.0",
+    "jsdom": "^27.0.0",
+    "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31"
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6"
   }
 }
