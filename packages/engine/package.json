@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "@ai-dungeon-master/engine",
   "version": "0.1.0",
   "private": true,
@@ -20,7 +20,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-dungeon-master/models": "workspace:*"
+    "@ai-dungeon-master/models": "workspace:*",
+    "xstate": "^4.39.0"
   },
   "devDependencies": {
     "typescript": "^5.2.2",
