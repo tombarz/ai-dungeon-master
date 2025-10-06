@@ -6,7 +6,8 @@
                             "module":  "commonjs",
                             "target":  "ES2021",
                             "types":  [
-                                          "node"
+                                          "node",
+                                          "jest"
                                       ],
                             "emitDecoratorMetadata":  true,
                             "experimentalDecorators":  true,
