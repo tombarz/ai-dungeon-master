@@ -1,4 +1,4 @@
-// Public surface area for the engine package
+﻿// Public surface area for the engine package
 export * from "./dice";
 export * from "./dice-roller";
 export * from "./ability-score-calculator";

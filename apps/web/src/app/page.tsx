@@ -1,10 +1,34 @@
-// Web app placeholder for AI Dungeon Master MVP
+﻿"use client";
+
+import { OllamaChat } from "@ai-dungeon-master/ui";
+
+const resolveSystemPrompt = () => {
+  if (typeof process !== "undefined") {
+    return process.env?.NEXT_PUBLIC_DM_SYSTEM_PROMPT ?? process.env?.NEXT_PUBLIC_OLLAMA_SYSTEM_PROMPT;
+  }
+  return undefined;
+};
+
+const resolveApiBaseUrl = () => {
+  if (typeof process !== "undefined") {
+    return process.env?.NEXT_PUBLIC_API_BASE_URL;
+  }
+  return undefined;
+};
+
 export default function Home() {
+  const systemPrompt = resolveSystemPrompt();
+  const apiBaseUrl = resolveApiBaseUrl();
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>AI Dungeon Master - Web App</h1>
-      <p>Placeholder for the web application.</p>
-      <p>The real focus is on the types and schemas in the models package.</p>
+    <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100">
+      <main className="mx-auto w-full max-w-3xl">
+        <OllamaChat
+          placeholder="Describe your next move or ask for a plot twist..."
+          apiBaseUrl={apiBaseUrl}
+          systemPrompt={systemPrompt}
+        />
+      </main>
     </div>
-  )
+  );
 }

@@ -1,0 +1,31 @@
+﻿{
+    "extends":  "../../tsconfig.json",
+    "compilerOptions":  {
+                            "outDir":  "dist",
+                            "rootDir":  "src",
+                            "module":  "commonjs",
+                            "target":  "ES2021",
+                            "types":  [
+                                          "node",
+                                          "jest"
+                                      ],
+                            "emitDecoratorMetadata":  true,
+                            "experimentalDecorators":  true,
+                            "strict":  true,
+                            "noImplicitAny":  true,
+                            "sourceMap":  true,
+                            "incremental":  true,
+                            "lib":  [
+                                        "ES2021",
+                                        "DOM"
+                                    ],
+                            "moduleResolution":  "node"
+                        },
+    "include":  [
+                    "src/**/*"
+                ],
+    "exclude":  [
+                    "node_modules",
+                    "dist"
+                ]
+}
