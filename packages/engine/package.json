@@ -20,8 +20,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-dungeon-master/models": "workspace:*",
-    "xstate": "^4.39.0"
+    "@ai-dungeon-master/models": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.2.2",
