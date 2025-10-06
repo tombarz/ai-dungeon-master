@@ -6,16 +6,24 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['log', 'error', 'warn']
+    logger: ['log', 'error', 'warn'],
   });
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   app.use(json({ limit: '1mb' }));
+
+  const rawOrigins = process.env.CORS_ORIGIN ?? '';
+  const parsedOrigins = rawOrigins
+    .split(',')
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
+  const origin = parsedOrigins.length > 0 ? parsedOrigins : '*';
+
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',').map((value) => value.trim()).filter(Boolean) ?? '*',
+    origin,
     credentials: false,
-    methods: ['GET', 'POST', 'OPTIONS']
+    methods: ['GET', 'POST', 'OPTIONS'],
   });
 
   const port = Number(process.env.PORT ?? 3001);
