@@ -22,9 +22,21 @@ describe('CharacterCreationService', () => {
     expect(service.parseAbilityInput('auto')).toEqual(service.generateStandardAbilityScores());
   });
 
-  it('parses explicit ability lists', () => {
-    const abilities = service.parseAbilityInput('STR 16, DEX 14, CON 13, INT 12, WIS 10, CHA 9');
-    expect(abilities).toEqual({ STR: 16, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 9 });
+  it('uses extractor to infer abilities from natural language when provided', async () => {
+    const mockExtractor = {
+      extractCharacterUpdate: async () => ({
+        abilities: { STR: 16, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 9 },
+      }),
+    } as any;
+    const svc = new (require('./character-creation.service').CharacterCreationService)(mockExtractor);
+    let d = svc.createEmptyDraft();
+    const result = await svc.applyAnswerToDraft(
+      d,
+      'abilities',
+      'I rolled 16 strength, 14 dex, 13 con, 12 int, 10 wis, 9 cha.',
+    );
+    expect(result.error).toBeUndefined();
+    expect(result.draft.abilities).toEqual({ STR: 16, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 9 });
   });
 
   it('tracks missing fields and produces prompts', () => {
@@ -37,7 +49,7 @@ describe('CharacterCreationService', () => {
     await answer('race', 'Elf');
     await answer('class', 'Wizard');
     await answer('level', '3');
-    await answer('abilities', '15 14 13 12 10 8');
+    await answer('abilities', 'auto');
     await answer('ac', '16');
     await answer('maxHP', '24');
     await answer('hp', '24');
@@ -52,7 +64,7 @@ describe('CharacterCreationService', () => {
     await answer('race', 'Elf');
     await answer('class', 'Wizard');
     await answer('level', '3');
-    await answer('abilities', '15 14 13 12 10 8');
+    await answer('abilities', 'auto');
     await answer('ac', '16');
     await answer('maxHP', '24');
     await answer('hp', '20');

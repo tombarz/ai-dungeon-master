@@ -62,40 +62,9 @@ export class CharacterCreationService {
   parseAbilityInput(answer: string): Record<Ability, number> | null {
     const normalized = answer.trim().toLowerCase();
     if (!normalized) return null;
-    if (['auto', 'standard', 'default', 'yes'].includes(normalized)) {
+    if (["auto", "standard", "default", "yes"].includes(normalized)) {
       return this.generateStandardAbilityScores();
     }
-
-    const explicitMatches = Array.from(
-      normalized.matchAll(/(str|dex|con|int|wis|cha)\s*[:=]?\s*(\d{1,2})/gi),
-    );
-
-    if (explicitMatches.length > 0) {
-      const abilityMap: Partial<Record<Ability, number>> = {};
-      explicitMatches.forEach(([, key, raw]) => {
-        const ability = key.toUpperCase() as Ability;
-        const value = clamp(parseInt(raw, 10), 1, 30);
-        abilityMap[ability] = value;
-      });
-      if (DEFAULT_ABILITY_ORDER.every((ability) => abilityMap[ability] !== undefined)) {
-        return abilityMap as Record<Ability, number>;
-      }
-    }
-
-    const numberTokens = normalized
-      .split(/[^0-9]+/)
-      .map((token) => token.trim())
-      .filter((token) => token.length > 0);
-
-    if (numberTokens.length === DEFAULT_ABILITY_ORDER.length) {
-      const abilityScores = {} as Record<Ability, number>;
-      DEFAULT_ABILITY_ORDER.forEach((ability, index) => {
-        const score = clamp(parseInt(numberTokens[index]!, 10), 1, 30);
-        abilityScores[ability] = score;
-      });
-      return abilityScores;
-    }
-
     return null;
   }
 
@@ -273,3 +242,4 @@ const clamp = (value: number, min: number, max: number) => {
   if (Number.isNaN(value)) return min;
   return Math.max(min, Math.min(max, value));
 };
+
