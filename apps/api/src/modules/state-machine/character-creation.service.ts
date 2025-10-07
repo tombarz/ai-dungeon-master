@@ -1,7 +1,14 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 
-import type { Ability, PlayerCharacter } from '@ai-dungeon-master/models';
+import type {
+  Ability,
+  PlayerCharacter,
+  CharacterDraft,
+  CharacterField,
+  CharacterQuestion,
+  CompleteCharacterDraft,
+} from '@ai-dungeon-master/models';
 
 const DEFAULT_ABILITY_ORDER: Ability[] = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
 const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8] as const;
@@ -9,36 +16,6 @@ const MIN_LEVEL = 1;
 const MAX_LEVEL = 20;
 const MIN_ARMOR_CLASS = 5;
 const MIN_HIT_POINTS = 1;
-
-export type CharacterField =
-  | 'name'
-  | 'race'
-  | 'class'
-  | 'level'
-  | 'abilities'
-  | 'ac'
-  | 'maxHP'
-  | 'hp'
-  | 'backstory';
-
-export interface CharacterDraft {
-  id?: string;
-  kind?: 'character';
-  name?: string;
-  race?: string;
-  class?: string;
-  level?: number;
-  abilities?: Record<Ability, number>;
-  ac?: number;
-  maxHP?: number;
-  hp?: number;
-  backstory?: string;
-}
-
-export interface CharacterQuestion {
-  field: CharacterField;
-  prompt: string;
-}
 
 const FIELD_PROMPTS: Record<CharacterField, string> = {
   name: "What's the character's name?",
@@ -196,7 +173,7 @@ export class CharacterCreationService {
     return { field, prompt: FIELD_PROMPTS[field] };
   }
 
-  isDraftComplete(draft: CharacterDraft): draft is RequiredDraft {
+  isDraftComplete(draft: CharacterDraft): draft is CompleteCharacterDraft {
     return this.getMissingFields(draft).length === 0;
   }
 
@@ -250,18 +227,6 @@ export class CharacterCreationService {
     }
   }
 }
-
-type RequiredDraft = CharacterDraft & {
-  name: string;
-  race: string;
-  class: string;
-  level: number;
-  abilities: Record<Ability, number>;
-  ac: number;
-  maxHP: number;
-  hp: number;
-  backstory: string;
-};
 
 const safeUUID = () => {
   if (typeof randomUUID === 'function') return randomUUID();

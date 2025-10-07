@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Types exports - organized by domain for better maintainability
  */
 
@@ -13,3 +13,6 @@ export * from "./entities";
 
 // Game state types
 export * from "./game-state";
+
+// State machine types
+export * from "./state-machine";
