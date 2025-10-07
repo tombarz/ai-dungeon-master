@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 
 import type {
@@ -112,24 +112,27 @@ export class CharacterCreationService {
       case 'class':
         return { draft: { ...draft, [field]: trimmed } };
       case 'level': {
-        const value = clamp(parseInt(trimmed, 10), MIN_LEVEL, MAX_LEVEL);
-        if (Number.isNaN(value)) {
+        const parsed = parseInt(trimmed, 10);
+        if (Number.isNaN(parsed)) {
           return { draft, error: 'Unable to parse level.' };
         }
+        const value = clamp(parsed, MIN_LEVEL, MAX_LEVEL);
         return { draft: { ...draft, level: value } };
       }
       case 'ac': {
-        const value = clamp(parseInt(trimmed, 10), MIN_ARMOR_CLASS, 99);
-        if (Number.isNaN(value)) {
+        const parsed = parseInt(trimmed, 10);
+        if (Number.isNaN(parsed)) {
           return { draft, error: 'Unable to parse armor class.' };
         }
+        const value = clamp(parsed, MIN_ARMOR_CLASS, 99);
         return { draft: { ...draft, ac: value } };
       }
       case 'maxHP': {
-        const value = clamp(parseInt(trimmed, 10), MIN_HIT_POINTS, 999);
-        if (Number.isNaN(value)) {
+        const parsed = parseInt(trimmed, 10);
+        if (Number.isNaN(parsed)) {
           return { draft, error: 'Unable to parse maximum hit points.' };
         }
+        const value = clamp(parsed, MIN_HIT_POINTS, 999);
         const nextDraft = { ...draft, maxHP: value };
         if (nextDraft.hp !== undefined && nextDraft.hp > value) {
           nextDraft.hp = value;
@@ -137,10 +140,11 @@ export class CharacterCreationService {
         return { draft: nextDraft };
       }
       case 'hp': {
-        const value = clamp(parseInt(trimmed, 10), MIN_HIT_POINTS, 999);
-        if (Number.isNaN(value)) {
+        const parsed = parseInt(trimmed, 10);
+        if (Number.isNaN(parsed)) {
           return { draft, error: 'Unable to parse current hit points.' };
         }
+        const value = clamp(parsed, MIN_HIT_POINTS, 999);
         const maxHP = draft.maxHP ?? value;
         return { draft: { ...draft, hp: Math.min(value, maxHP), maxHP } };
       }
@@ -237,3 +241,4 @@ const clamp = (value: number, min: number, max: number) => {
   if (Number.isNaN(value)) return min;
   return Math.max(min, Math.min(max, value));
 };
+
