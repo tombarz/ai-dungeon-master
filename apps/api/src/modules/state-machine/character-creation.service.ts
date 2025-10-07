@@ -9,6 +9,7 @@ import type {
   CharacterQuestion,
   CompleteCharacterDraft,
 } from '@ai-dungeon-master/models';
+import { ExtractionService } from './extraction.service';
 
 const DEFAULT_ABILITY_ORDER: Ability[] = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
 const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8] as const;
@@ -44,6 +45,8 @@ const REQUIRED_FIELDS: CharacterField[] = [
 
 @Injectable()
 export class CharacterCreationService {
+  constructor(private readonly extractor?: ExtractionService) {}
+
   createEmptyDraft(): CharacterDraft {
     return { kind: 'character' };
   }
@@ -96,11 +99,11 @@ export class CharacterCreationService {
     return null;
   }
 
-  applyAnswerToDraft(
+  async applyAnswerToDraft(
     draft: CharacterDraft,
     field: CharacterField,
     answer: string,
-  ): { draft: CharacterDraft; error?: string } {
+  ): Promise<{ draft: CharacterDraft; error?: string }> {
     const trimmed = answer.trim();
     if (!trimmed) {
       return { draft, error: 'Please provide a response.' };
@@ -112,6 +115,12 @@ export class CharacterCreationService {
       case 'class':
         return { draft: { ...draft, [field]: trimmed } };
       case 'level': {
+        if (!/^\d+$/.test(trimmed) && this.extractor) {
+          const u = await this.extractor.extractCharacterUpdate(trimmed, ['level']);
+          if (u.level !== undefined) {
+            return { draft: { ...draft, level: u.level } };
+          }
+        }
         const parsed = parseInt(trimmed, 10);
         if (Number.isNaN(parsed)) {
           return { draft, error: 'Unable to parse level.' };
@@ -120,6 +129,12 @@ export class CharacterCreationService {
         return { draft: { ...draft, level: value } };
       }
       case 'ac': {
+        if (!/^\d+$/.test(trimmed) && this.extractor) {
+          const u = await this.extractor.extractCharacterUpdate(trimmed, ['ac']);
+          if (u.ac !== undefined) {
+            return { draft: { ...draft, ac: u.ac } };
+          }
+        }
         const parsed = parseInt(trimmed, 10);
         if (Number.isNaN(parsed)) {
           return { draft, error: 'Unable to parse armor class.' };
@@ -128,18 +143,33 @@ export class CharacterCreationService {
         return { draft: { ...draft, ac: value } };
       }
       case 'maxHP': {
+        if (!/^\d+$/.test(trimmed) && this.extractor) {
+          const u = await this.extractor.extractCharacterUpdate(trimmed, ['maxHP']);
+          if (u.maxHP !== undefined) {
+            const nextDraft = { ...draft, maxHP: u.maxHP } as CharacterDraft;
+            if (nextDraft.hp !== undefined && nextDraft.hp > u.maxHP) nextDraft.hp = u.maxHP;
+            return { draft: nextDraft };
+          }
+        }
         const parsed = parseInt(trimmed, 10);
         if (Number.isNaN(parsed)) {
           return { draft, error: 'Unable to parse maximum hit points.' };
         }
         const value = clamp(parsed, MIN_HIT_POINTS, 999);
-        const nextDraft = { ...draft, maxHP: value };
+        const nextDraft = { ...draft, maxHP: value } as CharacterDraft;
         if (nextDraft.hp !== undefined && nextDraft.hp > value) {
           nextDraft.hp = value;
         }
         return { draft: nextDraft };
       }
       case 'hp': {
+        if (!/^\d+$/.test(trimmed) && this.extractor) {
+          const u = await this.extractor.extractCharacterUpdate(trimmed, ['hp']);
+          if (u.hp !== undefined) {
+            const maxHP = draft.maxHP ?? u.hp;
+            return { draft: { ...draft, hp: Math.min(u.hp, maxHP), maxHP } };
+          }
+        }
         const parsed = parseInt(trimmed, 10);
         if (Number.isNaN(parsed)) {
           return { draft, error: 'Unable to parse current hit points.' };
@@ -150,12 +180,14 @@ export class CharacterCreationService {
       }
       case 'abilities': {
         const abilities = this.parseAbilityInput(trimmed);
+        if (!abilities && this.extractor) {
+          const u = await this.extractor.extractCharacterUpdate(trimmed, ['abilities']);
+          if (u.abilities) {
+            return { draft: { ...draft, abilities: u.abilities } };
+          }
+        }
         if (!abilities) {
-          return {
-            draft,
-            error:
-              "Unable to interpret ability scores. Try 'auto' or provide values for STR DEX CON INT WIS CHA.",
-          };
+          return { draft, error: "Unable to interpret ability scores. Try 'auto' or provide values for STR DEX CON INT WIS CHA." };
         }
         return { draft: { ...draft, abilities } };
       }
@@ -241,4 +273,3 @@ const clamp = (value: number, min: number, max: number) => {
   if (Number.isNaN(value)) return min;
   return Math.max(min, Math.min(max, value));
 };
-

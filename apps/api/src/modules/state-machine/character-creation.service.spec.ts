@@ -5,8 +5,8 @@ describe('CharacterCreationService', () => {
   let service: CharacterCreationService;
   let draft: CharacterDraft;
 
-  const answer = (field: CharacterField, value: string) => {
-    const result = service.applyAnswerToDraft(draft, field, value);
+  const answer = async (field: CharacterField, value: string) => {
+    const result = await service.applyAnswerToDraft(draft, field, value);
     if (result.error) {
       throw new Error(`Unexpected error: ${result.error}`);
     }
@@ -32,31 +32,31 @@ describe('CharacterCreationService', () => {
     expect(service.getMissingFields(draft)).toContain('race');
   });
 
-  it('advances the draft until complete', () => {
-    answer('name', 'Eira');
-    answer('race', 'Elf');
-    answer('class', 'Wizard');
-    answer('level', '3');
-    answer('abilities', '15 14 13 12 10 8');
-    answer('ac', '16');
-    answer('maxHP', '24');
-    answer('hp', '24');
-    answer('backstory', 'An apprentice seeking lost lore.');
+  it('advances the draft until complete', async () => {
+    await answer('name', 'Eira');
+    await answer('race', 'Elf');
+    await answer('class', 'Wizard');
+    await answer('level', '3');
+    await answer('abilities', '15 14 13 12 10 8');
+    await answer('ac', '16');
+    await answer('maxHP', '24');
+    await answer('hp', '24');
+    await answer('backstory', 'An apprentice seeking lost lore.');
 
     expect(service.isDraftComplete(draft)).toBe(true);
     expect(service.getMissingFields(draft)).toHaveLength(0);
   });
 
-  it('finalizes a draft into a player character', () => {
-    answer('name', 'Eira');
-    answer('race', 'Elf');
-    answer('class', 'Wizard');
-    answer('level', '3');
-    answer('abilities', '15 14 13 12 10 8');
-    answer('ac', '16');
-    answer('maxHP', '24');
-    answer('hp', '20');
-    answer('backstory', 'An apprentice seeking lost lore.');
+  it('finalizes a draft into a player character', async () => {
+    await answer('name', 'Eira');
+    await answer('race', 'Elf');
+    await answer('class', 'Wizard');
+    await answer('level', '3');
+    await answer('abilities', '15 14 13 12 10 8');
+    await answer('ac', '16');
+    await answer('maxHP', '24');
+    await answer('hp', '20');
+    await answer('backstory', 'An apprentice seeking lost lore.');
 
     const character = service.finalizeCharacter(draft);
     expect(character.kind).toBe('character');
@@ -64,5 +64,3 @@ describe('CharacterCreationService', () => {
     expect(Object.values(character.abilities)).toContain(15);
   });
 });
-
-

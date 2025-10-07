@@ -38,3 +38,10 @@ export interface CompleteCharacterDraft extends CharacterDraft {
   hp: number;
   backstory: string;
 }
+
+export type CharacterUpdate = Partial<
+  Pick<
+    PlayerCharacter,
+    "name" | "race" | "class" | "level" | "abilities" | "ac" | "maxHP" | "hp" | "backstory"
+  >
+>;
