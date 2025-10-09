@@ -19,7 +19,9 @@
                                         "ES2021",
                                         "DOM"
                                     ],
-                            "moduleResolution":  "node"
+                            "moduleResolution":  "node",
+                            "baseUrl":  "../../",
+                            "paths": { "@ai-dungeon-master/models": ["packages/models/src"], "@ai-dungeon-master/models/*": ["packages/models/src/*"], "@ai-dungeon-master/engine": ["packages/engine/src"], "@ai-dungeon-master/orchestrator": ["packages/orchestrator/src"], "@ai-dungeon-master/storage": ["packages/storage/src"], "@ai-dungeon-master/ui": ["packages/ui/src"] }
                         },
     "include":  [
                     "src/**/*"
@@ -27,5 +29,11 @@
     "exclude":  [
                     "node_modules",
                     "dist"
-                ]
+                ],
+    "references":  [
+                       {
+                           "path":  "../../packages/models"
+                       }
+                   ]
 }
+

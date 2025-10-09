@@ -1,5 +1,5 @@
 ﻿import { CharacterCreationService } from './character-creation.service';
-import type { CharacterDraft, CharacterField } from '@ai-dungeon-master/models';
+import type { CharacterDraft, CharacterField } from '@ai-dungeon-master/models/types/state-machine';
 
 describe('CharacterCreationService', () => {
   let service: CharacterCreationService;
@@ -76,3 +76,7 @@ describe('CharacterCreationService', () => {
     expect(Object.values(character.abilities)).toContain(15);
   });
 });
+
+
+
+

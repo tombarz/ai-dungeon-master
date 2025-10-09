@@ -1,9 +1,10 @@
 ﻿import { Module } from '@nestjs/common';
 
 import { ChatModule } from './modules/chat/chat.module';
-import { StateMachineModule } from './modules/state-machine/state-machine.module';
+import { CharacterCreationModule } from './modules/character-creation/character-creation.module';
 
 @Module({
-  imports: [ChatModule, StateMachineModule],
+  imports: [ChatModule, CharacterCreationModule],
 })
 export class AppModule {}
+
