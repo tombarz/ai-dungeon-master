@@ -1,6 +1,6 @@
 ﻿import { Injectable, Logger } from '@nestjs/common';
 
-import { ChatMessageDto, ChatRequestDto, ChatResponseDto } from './chat.dto';
+import { ChatMessageDto, ChatRequestDto, ChatResponseDto } from './dto';
 
 const DEFAULT_ENDPOINT = process.env.OLLAMA_ENDPOINT ?? 'http://localhost:11434';
 const SHORT_REPLY_DIRECTIVE = 'Keep every reply under 30 words.';

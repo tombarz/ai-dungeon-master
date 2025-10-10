@@ -1,6 +1,6 @@
 ﻿import { Body, Controller, Post } from '@nestjs/common';
 
-import { ChatRequestDto, ChatResponseDto } from './chat.dto';
+import { ChatRequestDto, ChatResponseDto } from './dto';
 import { ChatService } from './chat.service';
 
 @Controller('chat')

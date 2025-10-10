@@ -25,7 +25,7 @@ export interface StatBlock {
 }
 
 /** Kind of creature in the game */
-export type CreatureKind = 'character'|'npc'|'monster';
+export type CreatureKind = "character" | "npc" | "monster";
 
 /** Any creature or character in the game world */
 export interface Creature extends StatBlock {
@@ -47,4 +47,11 @@ export interface Creature extends StatBlock {
   inventory?: { name: string; qty?: number }[];
   /** Active status conditions */
   conditions?: Condition[];
+  /** Narrative backstory for role-play context */
+  backstory?: string;
+}
+
+/** Fully realized player-controlled character */
+export interface PlayerCharacter extends Creature {
+  backstory: string;
 }

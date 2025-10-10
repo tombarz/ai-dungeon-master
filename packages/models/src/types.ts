@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Types exports - organized by domain for better maintainability
  *
  * This file maintains the same public API while providing better organization
@@ -10,3 +10,4 @@ export * from "./types/core";
 export * from "./types/dice";
 export * from "./types/entities";
 export * from "./types/game-state";
+export * from "./types/state-machine";

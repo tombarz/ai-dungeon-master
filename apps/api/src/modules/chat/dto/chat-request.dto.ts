@@ -1,13 +1,7 @@
 ﻿import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class ChatMessageDto {
-  @IsString()
-  role!: 'user' | 'assistant' | 'system';
-
-  @IsString()
-  content!: string;
-}
+import { ChatMessageDto } from './chat-message.dto';
 
 export class ChatRequestDto {
   @IsArray()
@@ -26,8 +20,4 @@ export class ChatRequestDto {
   @IsOptional()
   @IsString()
   endpoint?: string;
-}
-
-export class ChatResponseDto {
-  content!: string;
 }

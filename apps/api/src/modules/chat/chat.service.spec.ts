@@ -1,5 +1,5 @@
 ﻿import { ChatService } from './chat.service';
-import { ChatMessageDto, ChatRequestDto } from './chat.dto';
+import { ChatMessageDto, ChatRequestDto } from './dto';
 
 describe('ChatService', () => {
   let service: ChatService;
