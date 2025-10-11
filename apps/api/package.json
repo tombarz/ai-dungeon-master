@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "start": "node dist/main.js",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "pnpm --filter @ai-dungeon-master/models build && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "jest --runInBand"
   },

@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 
 import type {
@@ -72,22 +72,44 @@ export class CharacterCreationService {
     draft: CharacterDraft,
     field: CharacterField,
     answer: string,
+    history?: { role: 'user'|'assistant'|'system'; content: string }[],
   ): Promise<{ draft: CharacterDraft; error?: string }> {
     const trimmed = answer.trim();
     if (!trimmed) {
       return { draft, error: 'Please provide a response.' };
     }
 
+    const delegated = await this.computeDelegation(trimmed, field, history);
+
     switch (field) {
-      case 'name':
-      case 'race':
-      case 'class':
-        return { draft: { ...draft, [field]: trimmed } };
+      case 'name': {
+        if (delegated && this.extractor) {
+          const u = await this.extractor.suggestCharacterValues(['name'], draft, history);
+          if (u.name) return { draft: { ...draft, name: u.name } };
+        }
+        return { draft: { ...draft, name: trimmed } };
+      }
+      case 'race': {
+        if (delegated && this.extractor) {
+          const u = await this.extractor.suggestCharacterValues(['race'], draft, history);
+          if (u.race) return { draft: { ...draft, race: u.race } };
+        }
+        return { draft: { ...draft, race: trimmed } };
+      }
+      case 'class': {
+        if (delegated && this.extractor) {
+          const u = await this.extractor.suggestCharacterValues(['class'], draft, history);
+          if (u.class) return { draft: { ...draft, class: u.class } };
+        }
+        return { draft: { ...draft, class: trimmed } };
+      }
       case 'level': {
         if (!/^\d+$/.test(trimmed) && this.extractor) {
-          const u = await this.extractor.extractCharacterUpdate(trimmed, ['level']);
-          if (u.level !== undefined) {
-            return { draft: { ...draft, level: u.level } };
+          const u1 = await this.extractor.extractCharacterUpdate(trimmed, ['level'], history);
+          if (u1.level !== undefined) return { draft: { ...draft, level: u1.level } };
+          if (delegated) {
+            const u2 = await this.extractor.suggestCharacterValues(['level'], draft, history);
+            if (u2.level !== undefined) return { draft: { ...draft, level: u2.level } };
           }
         }
         const parsed = parseInt(trimmed, 10);
@@ -99,9 +121,11 @@ export class CharacterCreationService {
       }
       case 'ac': {
         if (!/^\d+$/.test(trimmed) && this.extractor) {
-          const u = await this.extractor.extractCharacterUpdate(trimmed, ['ac']);
-          if (u.ac !== undefined) {
-            return { draft: { ...draft, ac: u.ac } };
+          const u1 = await this.extractor.extractCharacterUpdate(trimmed, ['ac'], history);
+          if (u1.ac !== undefined) return { draft: { ...draft, ac: u1.ac } };
+          if (delegated) {
+            const u2 = await this.extractor.suggestCharacterValues(['ac'], draft, history);
+            if (u2.ac !== undefined) return { draft: { ...draft, ac: u2.ac } };
           }
         }
         const parsed = parseInt(trimmed, 10);
@@ -113,11 +137,19 @@ export class CharacterCreationService {
       }
       case 'maxHP': {
         if (!/^\d+$/.test(trimmed) && this.extractor) {
-          const u = await this.extractor.extractCharacterUpdate(trimmed, ['maxHP']);
-          if (u.maxHP !== undefined) {
-            const nextDraft = { ...draft, maxHP: u.maxHP } as CharacterDraft;
-            if (nextDraft.hp !== undefined && nextDraft.hp > u.maxHP) nextDraft.hp = u.maxHP;
+          const u1 = await this.extractor.extractCharacterUpdate(trimmed, ['maxHP'], history);
+          if (u1.maxHP !== undefined) {
+            const nextDraft = { ...draft, maxHP: u1.maxHP } as CharacterDraft;
+            if (nextDraft.hp !== undefined && nextDraft.hp > u1.maxHP) nextDraft.hp = u1.maxHP;
             return { draft: nextDraft };
+          }
+          if (delegated) {
+            const u2 = await this.extractor.suggestCharacterValues(['maxHP'], draft, history);
+            if (u2.maxHP !== undefined) {
+              const nextDraft = { ...draft, maxHP: u2.maxHP } as CharacterDraft;
+              if (nextDraft.hp !== undefined && nextDraft.hp > u2.maxHP) nextDraft.hp = u2.maxHP;
+              return { draft: nextDraft };
+            }
           }
         }
         const parsed = parseInt(trimmed, 10);
@@ -133,10 +165,17 @@ export class CharacterCreationService {
       }
       case 'hp': {
         if (!/^\d+$/.test(trimmed) && this.extractor) {
-          const u = await this.extractor.extractCharacterUpdate(trimmed, ['hp']);
-          if (u.hp !== undefined) {
-            const maxHP = draft.maxHP ?? u.hp;
-            return { draft: { ...draft, hp: Math.min(u.hp, maxHP), maxHP } };
+          const u1 = await this.extractor.extractCharacterUpdate(trimmed, ['hp'], history);
+          if (u1.hp !== undefined) {
+            const maxHP = draft.maxHP ?? u1.hp;
+            return { draft: { ...draft, hp: Math.min(u1.hp, maxHP), maxHP } };
+          }
+          if (delegated) {
+            const u2 = await this.extractor.suggestCharacterValues(['hp'], draft, history);
+            if (u2.hp !== undefined) {
+              const maxHP = draft.maxHP ?? u2.hp;
+              return { draft: { ...draft, hp: Math.min(u2.hp, maxHP), maxHP } };
+            }
           }
         }
         const parsed = parseInt(trimmed, 10);
@@ -150,9 +189,11 @@ export class CharacterCreationService {
       case 'abilities': {
         const abilities = this.parseAbilityInput(trimmed);
         if (!abilities && this.extractor) {
-          const u = await this.extractor.extractCharacterUpdate(trimmed, ['abilities']);
-          if (u.abilities) {
-            return { draft: { ...draft, abilities: u.abilities } };
+          const u1 = await this.extractor.extractCharacterUpdate(trimmed, ['abilities'], history);
+          if (u1.abilities) return { draft: { ...draft, abilities: u1.abilities } };
+          if (delegated) {
+            const u2 = await this.extractor.suggestCharacterValues(['abilities'], draft, history);
+            if (u2.abilities) return { draft: { ...draft, abilities: u2.abilities } };
           }
         }
         if (!abilities) {
@@ -160,8 +201,14 @@ export class CharacterCreationService {
         }
         return { draft: { ...draft, abilities } };
       }
-      case 'backstory':
+      case 'backstory': {
+        if (delegated && this.extractor) {
+          const u = await this.extractor.suggestCharacterValues(['backstory'], draft, history);
+          if (u.backstory) return { draft: { ...draft, backstory: u.backstory } };
+        }
+        // If user supplied text, accept as-is
         return { draft: { ...draft, backstory: trimmed } };
+      }
       default:
         return { draft };
     }
@@ -231,6 +278,20 @@ export class CharacterCreationService {
         return false;
     }
   }
+
+  private async computeDelegation(
+    text: string,
+    field: CharacterField,
+    history?: { role: 'user'|'assistant'|'system'; content: string }[],
+  ): Promise<boolean> {
+    try {
+      if (this.extractor) {
+        const delegated = await this.extractor.detectDelegation(text, field, history);
+        if (typeof delegated === 'boolean') return delegated;
+      }
+    } catch {}
+    return localDelegationHeuristic(text);
+  }
 }
 
 const safeUUID = () => {
@@ -242,6 +303,36 @@ const clamp = (value: number, min: number, max: number) => {
   if (Number.isNaN(value)) return min;
   return Math.max(min, Math.min(max, value));
 };
+
+const localDelegationHeuristic = (text: string) => {
+  const t = text.trim().toLowerCase();
+  return [
+    'auto',
+    'automatic',
+    'random',
+    'you decide',
+    "you choose",
+    'your choice',
+    'up to you',
+    'decide',
+    'pick for me',
+    'choose for me',
+    "i don't care",
+    "i dont care",
+    "don't care",
+    "dont care",
+    "doesn't matter",
+    "doesnt matter",
+    'whatever',
+    'anything works',
+    'any value',
+    'no preference',
+    'you pick',
+    'as you wish',
+  ].some((p) => t.includes(p));
+};
+
+
 
 
 

@@ -27,6 +27,7 @@ export default function Home() {
           placeholder="Describe your next move or ask for a plot twist..."
           apiBaseUrl={apiBaseUrl}
           systemPrompt={systemPrompt}
+          useStateMachine
         />
       </main>
     </div>

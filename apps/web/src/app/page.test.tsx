@@ -10,15 +10,20 @@ type FetchMock = ReturnType<typeof createFetchMock>;
 const createFetchMock = () =>
   vi.fn(async (input: RequestInfo | URL) => {
     const url = typeof input === "string" ? input : input.toString();
-    if (!url.includes("http://localhost:3001/api/chat")) {
-      throw new Error(`Unexpected fetch URL: ${url}`);
+    // State machine endpoint for both bootstrap and steps
+    if (url.includes("http://localhost:3001/api/state-machine/step")) {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          sessionId: "test-session",
+          phase: "CHARACTER_CREATION",
+          output: "What's the character's name?",
+        }),
+        text: async () => "",
+      } as Response;
     }
-    return {
-      ok: true,
-      status: 200,
-      json: async () => ({ content: "The tavern hushes as you enter." }),
-      text: async () => "",
-    } as Response;
+    throw new Error(`Unexpected fetch URL: ${url}`);
   });
 
 let fetchMock: FetchMock;
@@ -71,7 +76,7 @@ describe("Home", () => {
     await user.click(sendButton);
 
     expect(textarea).toHaveValue("");
-    await waitFor(() => expect(screen.getByText(/the tavern hushes/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/what's the character's name\?/i)).toBeInTheDocument());
     expect(fetchMock).toHaveBeenCalled();
   });
 });

@@ -1,8 +1,17 @@
 ﻿{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "declaration": true,
-    "sourceMap": false
+    "extends":  "./tsconfig.json",
+    "compilerOptions":  {
+                            "declaration":  true,
+                            "sourceMap": false,
+    "paths": {
+      "@ai-dungeon-master/models": ["../../packages/models/dist"],
+      "@ai-dungeon-master/models/*": ["../../packages/models/dist/*"]
+    }
   },
-  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts", "src/test.ts"]
+    "exclude":  [
+                    "src/**/*.spec.ts",
+                    "src/**/*.test.ts",
+                    "src/test.ts"
+                ]
 }
+

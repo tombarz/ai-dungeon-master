@@ -21,7 +21,7 @@
                                     ],
                             "moduleResolution":  "node",
                             "baseUrl":  "../../",
-                            "paths": { "@ai-dungeon-master/models": ["packages/models/src"], "@ai-dungeon-master/models/*": ["packages/models/src/*"], "@ai-dungeon-master/engine": ["packages/engine/src"], "@ai-dungeon-master/orchestrator": ["packages/orchestrator/src"], "@ai-dungeon-master/storage": ["packages/storage/src"], "@ai-dungeon-master/ui": ["packages/ui/src"] }
+                            "paths": { "@ai-dungeon-master/models": ["packages/models/dist"], "@ai-dungeon-master/models/*": ["packages/models/dist/*"], "@ai-dungeon-master/engine": ["packages/engine/src"], "@ai-dungeon-master/orchestrator": ["packages/orchestrator/src"], "@ai-dungeon-master/storage": ["packages/storage/src"], "@ai-dungeon-master/ui": ["packages/ui/src"] }
                         },
     "include":  [
                     "src/**/*"
