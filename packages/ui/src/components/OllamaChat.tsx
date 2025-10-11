@@ -7,6 +7,7 @@ export interface OllamaChatProps {
   placeholder?: string;
   apiBaseUrl?: string;
   systemPrompt?: string;
+  useStateMachine?: boolean;
 }
 
 const containerStyle: React.CSSProperties = {
@@ -89,16 +90,64 @@ async function sendChatToApi(
   return data?.content ?? "";
 }
 
+type StateMachineResponse = {
+  sessionId: string;
+  phase: 'CHARACTER_CREATION' | 'EXPLORING';
+  output: string;
+  draft?: unknown;
+  pendingField?: string;
+};
+
+const SESSION_STORAGE_KEY = 'adm.sessionId';
+
+const getOrCreateSessionId = (): string => {
+  if (typeof window === 'undefined') return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const existing = window.localStorage.getItem(SESSION_STORAGE_KEY);
+  if (existing && existing.length > 0) return existing;
+  const fresh = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  window.localStorage.setItem(SESSION_STORAGE_KEY, fresh);
+  return fresh;
+};
+
+async function stepStateMachine(
+  message: string,
+  options: { apiBaseUrl?: string },
+): Promise<StateMachineResponse> {
+  const baseUrl = getApiBaseUrl(options.apiBaseUrl);
+  const sessionId = getOrCreateSessionId();
+  const response = await fetch(`${baseUrl}/api/state-machine/step`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId, message }),
+  });
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(`API request failed (${response.status}): ${details}`.trim());
+  }
+  return (await response.json()) as StateMachineResponse;
+}
+
 export const OllamaChat: React.FC<OllamaChatProps> = ({
   initialMessages = [],
   placeholder = "Share your next move...",
   apiBaseUrl,
   systemPrompt,
+  useStateMachine = false,
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Static intro when using the state machine (no network call)
+  React.useEffect(() => {
+    if (!useStateMachine) return;
+    if (messages.length > 0) return;
+    const intro =
+      "Before we start the campaign, let's create your legendary character. I'll ask a few quick questions and we’ll build it together.";
+    setMessages([{ role: 'assistant', content: intro }]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [useStateMachine]);
 
   const transcript = useMemo(
     () =>
@@ -123,9 +172,17 @@ export const OllamaChat: React.FC<OllamaChatProps> = ({
     setError(null);
 
     try {
-      const reply = await sendChatToApi(history, { apiBaseUrl, systemPrompt });
-      if (reply.trim().length > 0) {
-        setMessages((current) => current.concat({ role: "assistant", content: reply.trim() }));
+      if (useStateMachine) {
+        const res = await stepStateMachine(userMessage.content, { apiBaseUrl });
+        const reply = res.output ?? '';
+        if (reply.trim().length > 0) {
+          setMessages((current) => current.concat({ role: 'assistant', content: reply.trim() }));
+        }
+      } else {
+        const reply = await sendChatToApi(history, { apiBaseUrl, systemPrompt });
+        if (reply.trim().length > 0) {
+          setMessages((current) => current.concat({ role: "assistant", content: reply.trim() }));
+        }
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
